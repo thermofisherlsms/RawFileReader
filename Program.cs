@@ -8,9 +8,9 @@
 // documentation for a complete list of methods available.
 // 
 // This code has been compiled and tested using Visual Studio 2013 Update 5, Visual Studio 
-// 2015 Update 3, Visual Studio 2017 Update 2, Visual Studio MAC, and MonoDevelop.  Additional 
-// tools used include Resharper 2017.1.  This application has been tested with .Net Framework 4.5.1, 
-// 4.5.2, 4.6, 4.6.1, 4.6.2, and 4.7.
+// 2015 Update 3, Visual Studio 2017 Update 2, Visual Studio 2019, and Visual Studio 2022, Visual
+// Studio MAC, and MonoDevelop.  Additional tools used include Resharper 2017.1.  This application
+// has been tested with .Net Framework 4.5.1, 4.5.2, 4.6, 4.6.1, 4.6.2, 4.7, and 4.8.
 //
 // Questions about the program can be directed to jim.shofstahl@thermofisher.com
 // --------------------------------------------------------------------------------------------------------------------
