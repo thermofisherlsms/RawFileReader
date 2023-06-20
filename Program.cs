@@ -188,18 +188,19 @@ namespace RawFileReaderDotNetExample
 
                 if (!rawFile.IsOpen || rawFile.IsError)
                 {
+                    // Check for any errors in the RAW file
+                    if (rawFile.IsError)
+                    {
+                        Console.WriteLine("Error opening ({0}) - {1}", rawFile.FileError.ErrorMessage, filename);
+
+                        return;
+                    }
+
                     Console.WriteLine("Unable to access the RAW file using the RawFileReader class!");
-                    
-                    return;
-                }
-
-                // Check for any errors in the RAW file
-                if (rawFile.IsError)
-                {
-                    Console.WriteLine("Error opening ({0}) - {1}", rawFile.FileError, filename);
 
                     return;
                 }
+
 
                 // Check if the RAW file is being acquired
                 if (rawFile.InAcquisition)
