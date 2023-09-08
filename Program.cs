@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Program.cs" company="Thermo Fisher Scientific">
 //   Copyright © Thermo Fisher Scientific. All rights reserved.
 // </copyright>
@@ -23,7 +23,6 @@ namespace RawFileReaderDotNetExample
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Linq;
     using System.Runtime.ExceptionServices;
 
     using ThermoFisher.CommonCore.Data;
@@ -150,9 +149,10 @@ namespace RawFileReaderDotNetExample
             bool getTrailerExtra = false;
             bool readAllScans = false;
             bool readAnalog = false;
-            bool readMassChromatogram = true;
+            bool readMassChromatogram = false;
             bool readScanInformation = false;
             bool readSpectrum = false;
+            bool testInstruments = true;
 
             // Get the memory used at the beginning of processing
             Process processBefore = Process.GetCurrentProcess();
@@ -277,10 +277,16 @@ namespace RawFileReaderDotNetExample
 
                     foreach (var device in deviceNames)
                     {
-                        Console.WriteLine("Instrument method: " + device);
+                        Console.WriteLine("Instrument name: " + device);
                     }
 
                     Console.WriteLine();
+                }
+
+                // Test the different instruments stored in the RAW file
+                if (testInstruments)
+                {
+                    TestInstruments(rawFile);
                 }
 
                 // Display all of the trailer extra data fields present in the RAW file
@@ -1243,6 +1249,176 @@ namespace RawFileReaderDotNetExample
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Test for the different instruments stored in a RAW file.
+        /// </summary>
+        /// <param name="rawFile">The RAW file being read</param>
+        private static void TestInstruments(IRawDataPlus rawFile)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Instrument count: " + rawFile.InstrumentCount);
+
+            // Get the count for each instrument type
+            int analogToDigitalCount = 0;
+            int msCount = 0;
+            int msAnalogCount = 0;
+            int statusCount = 0;
+            int pdaCount = 0;
+            int uvCount = 0;
+
+            for (int i = 0; i < rawFile.InstrumentCount; i++)
+            {
+                var type = rawFile.GetInstrumentType(i);
+                
+                switch (type)
+                {
+                    case Device.Analog:
+                        analogToDigitalCount++;
+                        break;
+                    case Device.MS:
+                        msCount++;
+                        break;
+                    case Device.MSAnalog:
+                        msAnalogCount++;
+                        break;
+                    case Device.Other:
+                        statusCount++;
+                        break;
+                    case Device.Pda:
+                        pdaCount++;
+                        break;
+                    case Device.UV:
+                        uvCount++;
+                        break;
+                }
+            }
+            
+            // Output the number of instruments of each type
+            Console.WriteLine("  A/D count: " + analogToDigitalCount);
+            Console.WriteLine("  MS count: " + msCount);
+            Console.WriteLine("  MS analog count: " + msAnalogCount);
+            Console.WriteLine("  Status count: " + statusCount);
+            Console.WriteLine("  PDA count: " + pdaCount);
+            Console.WriteLine("  UV count: " + uvCount);
+
+            // Try to select each a/d instrument
+            if (analogToDigitalCount > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  Selecting each A/D instrument: ");
+
+                for (int i = 0; i < analogToDigitalCount; i++)
+                {
+                    // Select each instrument
+                    try
+                    {
+                        rawFile.SelectInstrument(Device.Analog, i + 1);
+                        
+                        Console.WriteLine("     Selecting A/D instrument: " + (i + 1).ToString());
+                    }
+                    catch (Exception ex) 
+                    {
+                        Console.WriteLine("     Couldn't select A/D instrument: " + (i + 1).ToString());
+                        Console.WriteLine("     stack trace: " + ex.StackTrace);
+                    }
+                }
+            }
+
+            // Try to select each MS instrument
+            if (msCount > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  Selecting each MS instrument: ");
+
+                for (int i = 0; i < msCount; i++)
+                {
+                    // Select each instrument
+                    try
+                    {
+                        rawFile.SelectInstrument(Device.MS, i + 1);
+
+                        Console.WriteLine("     Selecting MS instrument: " + (i + 1).ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("     Couldn't select MS instrument: " + (i + 1).ToString());
+                        Console.WriteLine("     stack trace: " + ex.StackTrace);
+                    }
+                }
+            }
+
+            // Try to select each MS analog instrument
+            if (msAnalogCount > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  Selecting each MS analog instrument: ");
+
+                for (int i = 0; i < msAnalogCount; i++)
+                {
+                    // Select each instrument
+                    try
+                    {
+                        rawFile.SelectInstrument(Device.MSAnalog, i + 1);
+
+                        Console.WriteLine("     Selecting MS analog instrument: " + (i + 1).ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("     Couldn't select MS analog instrument: " + (i + 1).ToString());
+                        Console.WriteLine("     stack trace: " + ex.StackTrace);
+                    }
+                }
+            }
+
+            // Try to select each PDA analog instrument
+            if (pdaCount > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  Selecting each PDA instrument: ");
+
+                for (int i = 0; i < pdaCount; i++)
+                {
+                    // Select each instrument
+                    try
+                    {
+                        rawFile.SelectInstrument(Device.Pda, i + 1);
+
+                        Console.WriteLine("     Selecting PDA instrument: " + (i + 1).ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("     Couldn't select PDA instrument: " + (i + 1).ToString());
+                        Console.WriteLine("     stack trace: " + ex.StackTrace);
+                    }
+                }
+            }
+
+            // Try to select each UV analog instrument
+            if (uvCount > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  Selecting each UV instrument: ");
+
+                for (int i = 0; i < uvCount; i++)
+                {
+                    // Select each instrument
+                    try
+                    {
+                        rawFile.SelectInstrument(Device.UV, i + 1);
+
+                        Console.WriteLine("     Selecting UV instrument: " + (i + 1).ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("     Couldn't select UV instrument: " + (i + 1).ToString());
+                        Console.WriteLine("     stack trace: " + ex.StackTrace);
+                    }
+                }
+            }
+
+            Console.WriteLine();
         }
     }
 }
